@@ -14,7 +14,180 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      contact_requests: {
+        Row: {
+          created_at: string
+          creator_id: string
+          id: string
+          message: string
+          sender_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          creator_id: string
+          id?: string
+          message: string
+          sender_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string
+          id?: string
+          message?: string
+          sender_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      creator_profiles: {
+        Row: {
+          bio: string | null
+          categories: string[] | null
+          city: string | null
+          created_at: string
+          email: string | null
+          id: string
+          instagram: string | null
+          is_verified: boolean | null
+          phone: string | null
+          portfolio_description: string | null
+          specialty: string[] | null
+          state: string | null
+          updated_at: string
+          user_id: string
+          website: string | null
+          whatsapp: string | null
+          years_experience: number | null
+        }
+        Insert: {
+          bio?: string | null
+          categories?: string[] | null
+          city?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          instagram?: string | null
+          is_verified?: boolean | null
+          phone?: string | null
+          portfolio_description?: string | null
+          specialty?: string[] | null
+          state?: string | null
+          updated_at?: string
+          user_id: string
+          website?: string | null
+          whatsapp?: string | null
+          years_experience?: number | null
+        }
+        Update: {
+          bio?: string | null
+          categories?: string[] | null
+          city?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          instagram?: string | null
+          is_verified?: boolean | null
+          phone?: string | null
+          portfolio_description?: string | null
+          specialty?: string[] | null
+          state?: string | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+          whatsapp?: string | null
+          years_experience?: number | null
+        }
+        Relationships: []
+      }
+      follows: {
+        Row: {
+          created_at: string
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          follower_id?: string
+          following_id?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      posts: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+          user_type: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+          user_type?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+          user_type?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
