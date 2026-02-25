@@ -7,16 +7,16 @@ import { Target, Globe, Shield, Sparkles, Users, Heart } from 'lucide-react';
 
 export default function About() {
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background relative">
       <Navbar />
-      
+
       <div className="pt-20">
         {/* Hero Section */}
-        <section className="py-16 md:py-24 bg-primary/5">
+        <section className="py-16 md:py-24 bg-brand-plum/5">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="font-serif text-3xl md:text-5xl font-bold text-foreground text-balance">
               Empowering Local Creators,
-              <span className="text-primary block mt-2">One Connection at a Time</span>
+              <span className="text-brand-plum block mt-2">One Connection at a Time</span>
             </h1>
             <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
               KALAKAR ARENA is more than a platform — it's a movement to support local
@@ -49,7 +49,7 @@ export default function About() {
               <div className="grid grid-cols-2 gap-4">
                 <Card>
                   <CardContent className="p-6 text-center">
-                    <Target className="w-10 h-10 text-primary mx-auto mb-3" />
+                    <Target className="w-10 h-10 text-brand-plum mx-auto mb-3" />
                     <h4 className="font-semibold text-foreground">Low Budget Friendly</h4>
                     <p className="text-sm text-muted-foreground mt-1">
                       Free to join and showcase
@@ -58,7 +58,7 @@ export default function About() {
                 </Card>
                 <Card>
                   <CardContent className="p-6 text-center">
-                    <Globe className="w-10 h-10 text-primary mx-auto mb-3" />
+                    <Globe className="w-10 h-10 text-brand-plum mx-auto mb-3" />
                     <h4 className="font-semibold text-foreground">Local Focus</h4>
                     <p className="text-sm text-muted-foreground mt-1">
                       Support your community
@@ -67,7 +67,7 @@ export default function About() {
                 </Card>
                 <Card>
                   <CardContent className="p-6 text-center">
-                    <Shield className="w-10 h-10 text-primary mx-auto mb-3" />
+                    <Shield className="w-10 h-10 text-brand-plum mx-auto mb-3" />
                     <h4 className="font-semibold text-foreground">Direct Contact</h4>
                     <p className="text-sm text-muted-foreground mt-1">
                       No middlemen involved
@@ -76,7 +76,7 @@ export default function About() {
                 </Card>
                 <Card>
                   <CardContent className="p-6 text-center">
-                    <Sparkles className="w-10 h-10 text-primary mx-auto mb-3" />
+                    <Sparkles className="w-10 h-10 text-brand-plum mx-auto mb-3" />
                     <h4 className="font-semibold text-foreground">Unique Creations</h4>
                     <p className="text-sm text-muted-foreground mt-1">
                       One-of-a-kind pieces
@@ -89,7 +89,7 @@ export default function About() {
         </section>
 
         {/* Who We Serve */}
-        <section className="py-16 bg-secondary/30">
+        <section className="py-16 bg-brand-plum/5">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground text-center mb-12">
               Who We Serve
@@ -97,8 +97,8 @@ export default function About() {
             <div className="grid md:grid-cols-2 gap-8">
               <Card>
                 <CardContent className="p-8">
-                  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                    <Sparkles className="w-7 h-7 text-primary" />
+                  <div className="w-14 h-14 rounded-xl bg-brand-plum/10 flex items-center justify-center mb-4">
+                    <Sparkles className="w-7 h-7 text-brand-plum" />
                   </div>
                   <h3 className="font-serif text-xl font-semibold text-foreground mb-3">
                     For Creators
@@ -114,8 +114,8 @@ export default function About() {
               </Card>
               <Card>
                 <CardContent className="p-8">
-                  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                    <Users className="w-7 h-7 text-primary" />
+                  <div className="w-14 h-14 rounded-xl bg-brand-plum/10 flex items-center justify-center mb-4">
+                    <Users className="w-7 h-7 text-brand-plum" />
                   </div>
                   <h3 className="font-serif text-xl font-semibold text-foreground mb-3">
                     For Users
@@ -141,8 +141,8 @@ export default function About() {
             </h2>
             <div className="grid sm:grid-cols-3 gap-8">
               <div className="text-center">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <Heart className="w-8 h-8 text-primary" />
+                <div className="w-16 h-16 rounded-full bg-brand-plum/10 flex items-center justify-center mx-auto mb-4">
+                  <Heart className="w-8 h-8 text-brand-plum" />
                 </div>
                 <h3 className="font-semibold text-foreground mb-2">Community First</h3>
                 <p className="text-muted-foreground text-sm">
@@ -151,8 +151,8 @@ export default function About() {
                 </p>
               </div>
               <div className="text-center">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <Shield className="w-8 h-8 text-primary" />
+                <div className="w-16 h-16 rounded-full bg-brand-plum/10 flex items-center justify-center mx-auto mb-4">
+                  <Shield className="w-8 h-8 text-brand-plum" />
                 </div>
                 <h3 className="font-semibold text-foreground mb-2">Authenticity</h3>
                 <p className="text-muted-foreground text-sm">
@@ -161,8 +161,8 @@ export default function About() {
                 </p>
               </div>
               <div className="text-center">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <Sparkles className="w-8 h-8 text-primary" />
+                <div className="w-16 h-16 rounded-full bg-brand-plum/10 flex items-center justify-center mx-auto mb-4">
+                  <Sparkles className="w-8 h-8 text-brand-plum" />
                 </div>
                 <h3 className="font-semibold text-foreground mb-2">Empowerment</h3>
                 <p className="text-muted-foreground text-sm">
@@ -175,23 +175,23 @@ export default function About() {
         </section>
 
         {/* CTA */}
-        <section className="py-16 bg-primary">
+        <section className="py-16 bg-brand-plum">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="font-serif text-2xl md:text-3xl font-bold text-primary-foreground mb-4">
+            <h2 className="font-serif text-2xl md:text-3xl font-bold text-white mb-4">
               Ready to Join the Community?
             </h2>
-            <p className="text-primary-foreground/80 mb-8 max-w-xl mx-auto">
+            <p className="text-white/80 mb-8 max-w-xl mx-auto">
               Whether you're a creator looking to showcase your work or someone seeking
               unique handcrafted items, we welcome you to KALAKAR ARENA.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/signup?type=creator">
-                <Button size="lg" variant="secondary">
+                <Button size="lg" variant="secondary" className="text-brand-plum">
                   Join as Creator
                 </Button>
               </Link>
               <Link to="/explore">
-                <Button size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10 bg-transparent">
+                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10 bg-transparent">
                   Explore Creators
                 </Button>
               </Link>
@@ -199,7 +199,7 @@ export default function About() {
           </div>
         </section>
       </div>
-      
+
       <Footer />
     </main>
   );

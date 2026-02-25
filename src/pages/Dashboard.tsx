@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,11 +11,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { 
-  LayoutDashboard, 
-  User, 
-  ImagePlus, 
-  MessageSquare, 
+import {
+  User,
+  ImagePlus,
+  MessageSquare,
   Settings,
   Loader2,
   Camera,
@@ -24,35 +23,65 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  Eye
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
-interface Post {
+type Profile = {
+  full_name?: string | null;
+  avatar_url?: string | null;
+};
+
+type CreatorProfile = {
+  bio?: string | null;
+  phone?: string | null;
+  city?: string | null;
+  state?: string | null;
+  instagram?: string | null;
+  website?: string | null;
+  whatsapp?: string | null;
+  portfolio_description?: string | null;
+  categories?: string[] | null;
+};
+
+type Post = {
   id: string;
   title: string;
-  description: string | null;
+  description?: string | null;
   image_url: string;
-  category: string | null;
-  created_at: string;
-}
+  category?: string | null;
+};
 
-interface ContactRequest {
+type ContactRequest = {
   id: string;
-  message: string;
-  status: string;
+  status: 'pending' | 'accepted' | 'rejected';
   created_at: string;
-  sender_id: string;
-}
+  message: string;
+};
+
+const categoryOptions = [
+  'Fashion Design',
+  'Home Baking',
+  'Jewelry Making',
+  'Embroidery',
+  'Candle Making',
+  'Pottery',
+  'Crochet & Knitting',
+  'Mehendi Art',
+  'Custom Cakes',
+  'Photography',
+  'Painting',
+  'Calligraphy',
+];
 
 export default function Dashboard() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  
-  const [profile, setProfile] = useState<Record<string, unknown> | null>(null);
-  const [creatorProfile, setCreatorProfile] = useState<Record<string, unknown> | null>(null);
+
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [creatorProfile, setCreatorProfile] = useState<CreatorProfile | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [contactRequests, setContactRequests] = useState<ContactRequest[]>([]);
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
@@ -76,12 +105,6 @@ export default function Dashboard() {
   const [newPostCategory, setNewPostCategory] = useState('');
   const [newPostImage, setNewPostImage] = useState<File | null>(null);
 
-  const categoryOptions = [
-    'Fashion Design', 'Home Baking', 'Jewelry Making', 'Embroidery',
-    'Candle Making', 'Pottery', 'Crochet & Knitting', 'Mehendi Art',
-    'Custom Cakes', 'Photography', 'Painting', 'Calligraphy'
-  ];
-
   useEffect(() => {
     if (!authLoading && !user) {
       navigate('/login');
@@ -89,8 +112,9 @@ export default function Dashboard() {
     }
 
     if (user) {
-      fetchData();
+      void fetchData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, authLoading, navigate]);
 
   const fetchData = async () => {
@@ -105,8 +129,9 @@ export default function Dashboard() {
         .maybeSingle();
 
       if (profileData) {
-        setProfile(profileData);
-        setFullName(profileData.full_name || '');
+        const casted = profileData as Profile;
+        setProfile(casted);
+        setFullName(casted.full_name || '');
       }
 
       // Fetch creator profile
@@ -117,16 +142,17 @@ export default function Dashboard() {
         .maybeSingle();
 
       if (creatorData) {
-        setCreatorProfile(creatorData);
-        setBio(creatorData.bio || '');
-        setPhone(creatorData.phone || '');
-        setCity(creatorData.city || '');
-        setState(creatorData.state || '');
-        setInstagram(creatorData.instagram || '');
-        setWebsite(creatorData.website || '');
-        setWhatsapp(creatorData.whatsapp || '');
-        setPortfolioDescription(creatorData.portfolio_description || '');
-        setCategories(creatorData.categories || []);
+        const casted = creatorData as CreatorProfile;
+        setCreatorProfile(casted);
+        setBio(casted.bio || '');
+        setPhone(casted.phone || '');
+        setCity(casted.city || '');
+        setState(casted.state || '');
+        setInstagram(casted.instagram || '');
+        setWebsite(casted.website || '');
+        setWhatsapp(casted.whatsapp || '');
+        setPortfolioDescription(casted.portfolio_description || '');
+        setCategories(casted.categories || []);
       }
 
       // Fetch posts
@@ -137,7 +163,7 @@ export default function Dashboard() {
         .order('created_at', { ascending: false });
 
       if (postsData) {
-        setPosts(postsData);
+        setPosts(postsData as Post[]);
       }
 
       // Fetch contact requests
@@ -148,16 +174,17 @@ export default function Dashboard() {
         .order('created_at', { ascending: false });
 
       if (requestsData) {
-        setContactRequests(requestsData);
+        setContactRequests(requestsData as ContactRequest[]);
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Error fetching dashboard data:', error);
+      toast({ title: 'Failed to load dashboard data', variant: 'destructive' });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
@@ -181,7 +208,7 @@ export default function Dashboard() {
         .update({ avatar_url: urlData.publicUrl })
         .eq('user_id', user.id);
 
-      setProfile(prev => prev ? { ...prev, avatar_url: urlData.publicUrl } : null);
+      setProfile(prev => (prev ? { ...prev, avatar_url: urlData.publicUrl } : { avatar_url: urlData.publicUrl }));
       toast({ title: 'Avatar updated successfully!' });
     } catch (error) {
       console.error('Error uploading avatar:', error);
@@ -214,9 +241,12 @@ export default function Dashboard() {
           website,
           whatsapp,
           portfolio_description: portfolioDescription,
-          categories
+          categories,
         })
         .eq('user_id', user.id);
+
+      setCreatorProfile(prev => (prev ? { ...prev, bio, phone, city, state, instagram, website, whatsapp, portfolio_description: portfolioDescription, categories } : prev));
+      setProfile(prev => (prev ? { ...prev, full_name: fullName } : prev));
 
       toast({ title: 'Profile updated successfully!' });
     } catch (error) {
@@ -253,14 +283,14 @@ export default function Dashboard() {
           title: newPostTitle,
           description: newPostDescription || null,
           image_url: urlData.publicUrl,
-          category: newPostCategory || null
+          category: newPostCategory || null,
         })
         .select()
         .single();
 
       if (postError) throw postError;
 
-      setPosts(prev => [postData, ...prev]);
+      setPosts(prev => [postData as Post, ...prev]);
       setNewPostTitle('');
       setNewPostDescription('');
       setNewPostCategory('');
@@ -296,8 +326,8 @@ export default function Dashboard() {
         .update({ status })
         .eq('id', requestId);
 
-      setContactRequests(prev => 
-        prev.map(r => r.id === requestId ? { ...r, status } : r)
+      setContactRequests(prev =>
+        prev.map(r => (r.id === requestId ? { ...r, status } : r)),
       );
       toast({ title: `Request ${status}!` });
     } catch (error) {
@@ -307,10 +337,10 @@ export default function Dashboard() {
   };
 
   const toggleCategory = (category: string) => {
-    setCategories(prev => 
+    setCategories(prev =>
       prev.includes(category)
         ? prev.filter(c => c !== category)
-        : [...prev, category]
+        : [...prev, category],
     );
   };
 
@@ -323,12 +353,12 @@ export default function Dashboard() {
   }
 
   const userName = fullName || user?.email?.split('@')[0] || 'Creator';
-  const avatarUrl = profile?.avatar_url as string | undefined;
+  const avatarUrl = (profile?.avatar_url ?? undefined) as string | undefined;
 
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
-      
+
       <div className="pt-20 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
@@ -355,22 +385,33 @@ export default function Dashboard() {
               <h1 className="font-serif text-2xl font-bold text-foreground">
                 Welcome, {userName}!
               </h1>
-              <p className="text-muted-foreground">Manage your creator profile and portfolio</p>
+              <p className="text-muted-foreground">
+                Manage your creator profile and portfolio
+              </p>
             </div>
           </div>
 
           {/* Dashboard Tabs */}
           <Tabs defaultValue="profile" className="space-y-6">
             <TabsList className="bg-muted">
-              <TabsTrigger value="profile" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <TabsTrigger
+                value="profile"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
                 <User className="w-4 h-4 mr-2" />
                 Profile
               </TabsTrigger>
-              <TabsTrigger value="portfolio" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <TabsTrigger
+                value="portfolio"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
                 <ImagePlus className="w-4 h-4 mr-2" />
                 Portfolio ({posts.length})
               </TabsTrigger>
-              <TabsTrigger value="requests" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <TabsTrigger
+                value="requests"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
                 <MessageSquare className="w-4 h-4 mr-2" />
                 Requests ({contactRequests.length})
               </TabsTrigger>
@@ -389,7 +430,7 @@ export default function Dashboard() {
                       <Label>Full Name</Label>
                       <Input
                         value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
+                        onChange={e => setFullName(e.target.value)}
                         placeholder="Your full name"
                       />
                     </div>
@@ -397,7 +438,7 @@ export default function Dashboard() {
                       <Label>Bio</Label>
                       <Textarea
                         value={bio}
-                        onChange={(e) => setBio(e.target.value)}
+                        onChange={e => setBio(e.target.value)}
                         placeholder="Tell people about yourself and your work..."
                         rows={4}
                       />
@@ -406,7 +447,7 @@ export default function Dashboard() {
                       <Label>Portfolio Description</Label>
                       <Textarea
                         value={portfolioDescription}
-                        onChange={(e) => setPortfolioDescription(e.target.value)}
+                        onChange={e => setPortfolioDescription(e.target.value)}
                         placeholder="Describe your portfolio and services..."
                         rows={3}
                       />
@@ -425,7 +466,7 @@ export default function Dashboard() {
                         <Label>City</Label>
                         <Input
                           value={city}
-                          onChange={(e) => setCity(e.target.value)}
+                          onChange={e => setCity(e.target.value)}
                           placeholder="Your city"
                         />
                       </div>
@@ -433,7 +474,7 @@ export default function Dashboard() {
                         <Label>State</Label>
                         <Input
                           value={state}
-                          onChange={(e) => setState(e.target.value)}
+                          onChange={e => setState(e.target.value)}
                           placeholder="Your state"
                         />
                       </div>
@@ -442,7 +483,7 @@ export default function Dashboard() {
                       <Label>Phone</Label>
                       <Input
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
+                        onChange={e => setPhone(e.target.value)}
                         placeholder="+91 XXXXX XXXXX"
                       />
                     </div>
@@ -450,7 +491,7 @@ export default function Dashboard() {
                       <Label>WhatsApp</Label>
                       <Input
                         value={whatsapp}
-                        onChange={(e) => setWhatsapp(e.target.value)}
+                        onChange={e => setWhatsapp(e.target.value)}
                         placeholder="WhatsApp number"
                       />
                     </div>
@@ -458,7 +499,7 @@ export default function Dashboard() {
                       <Label>Instagram</Label>
                       <Input
                         value={instagram}
-                        onChange={(e) => setInstagram(e.target.value)}
+                        onChange={e => setInstagram(e.target.value)}
                         placeholder="@yourusername"
                       />
                     </div>
@@ -466,7 +507,7 @@ export default function Dashboard() {
                       <Label>Website</Label>
                       <Input
                         value={website}
-                        onChange={(e) => setWebsite(e.target.value)}
+                        onChange={e => setWebsite(e.target.value)}
                         placeholder="https://yourwebsite.com"
                       />
                     </div>
@@ -476,14 +517,18 @@ export default function Dashboard() {
                 <Card className="md:col-span-2">
                   <CardHeader>
                     <CardTitle>Categories</CardTitle>
-                    <CardDescription>Select the categories that best describe your work</CardDescription>
+                    <CardDescription>
+                      Select the categories that best describe your work
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-wrap gap-2">
-                      {categoryOptions.map((category) => (
+                      {categoryOptions.map(category => (
                         <Badge
                           key={category}
-                          variant={categories.includes(category) ? 'default' : 'outline'}
+                          variant={
+                            categories.includes(category) ? 'default' : 'outline'
+                          }
                           className="cursor-pointer"
                           onClick={() => toggleCategory(category)}
                         >
@@ -495,7 +540,11 @@ export default function Dashboard() {
                 </Card>
 
                 <div className="md:col-span-2">
-                  <Button onClick={handleSaveProfile} disabled={saving} className="w-full sm:w-auto">
+                  <Button
+                    onClick={handleSaveProfile}
+                    disabled={saving}
+                    className="w-full sm:w-auto"
+                  >
                     {saving ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -528,7 +577,7 @@ export default function Dashboard() {
                           <Label>Title</Label>
                           <Input
                             value={newPostTitle}
-                            onChange={(e) => setNewPostTitle(e.target.value)}
+                            onChange={e => setNewPostTitle(e.target.value)}
                             placeholder="Name of your work"
                           />
                         </div>
@@ -536,7 +585,7 @@ export default function Dashboard() {
                           <Label>Description</Label>
                           <Textarea
                             value={newPostDescription}
-                            onChange={(e) => setNewPostDescription(e.target.value)}
+                            onChange={e => setNewPostDescription(e.target.value)}
                             placeholder="Describe your work..."
                             rows={3}
                           />
@@ -545,7 +594,7 @@ export default function Dashboard() {
                           <Label>Category</Label>
                           <Input
                             value={newPostCategory}
-                            onChange={(e) => setNewPostCategory(e.target.value)}
+                            onChange={e => setNewPostCategory(e.target.value)}
                             placeholder="e.g., Fashion Design"
                           />
                         </div>
@@ -579,7 +628,11 @@ export default function Dashboard() {
                                   type="file"
                                   accept="image/*"
                                   className="hidden"
-                                  onChange={(e) => setNewPostImage(e.target.files?.[0] || null)}
+                                  onChange={e =>
+                                    setNewPostImage(
+                                      e.target.files?.[0] ?? null,
+                                    )
+                                  }
                                 />
                               </label>
                             )}
@@ -612,7 +665,9 @@ export default function Dashboard() {
                   <Card className="border-dashed">
                     <CardContent className="py-12 text-center">
                       <ImagePlus className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                      <h4 className="font-medium text-foreground mb-2">No posts yet</h4>
+                      <h4 className="font-medium text-foreground mb-2">
+                        No posts yet
+                      </h4>
                       <p className="text-sm text-muted-foreground">
                         Start adding your work to build your portfolio
                       </p>
@@ -620,7 +675,7 @@ export default function Dashboard() {
                   </Card>
                 ) : (
                   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {posts.map((post) => (
+                    {posts.map(post => (
                       <Card key={post.id} className="overflow-hidden group">
                         <div className="aspect-square relative">
                           <img
@@ -639,7 +694,9 @@ export default function Dashboard() {
                           </div>
                         </div>
                         <CardContent className="p-4">
-                          <h4 className="font-medium text-foreground truncate">{post.title}</h4>
+                          <h4 className="font-medium text-foreground truncate">
+                            {post.title}
+                          </h4>
                           {post.category && (
                             <Badge variant="secondary" className="mt-2">
                               {post.category}
@@ -659,7 +716,9 @@ export default function Dashboard() {
                 <Card className="border-dashed">
                   <CardContent className="py-12 text-center">
                     <MessageSquare className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                    <h4 className="font-medium text-foreground mb-2">No requests yet</h4>
+                    <h4 className="font-medium text-foreground mb-2">
+                      No requests yet
+                    </h4>
                     <p className="text-sm text-muted-foreground">
                       When users contact you, their requests will appear here
                     </p>
@@ -667,7 +726,7 @@ export default function Dashboard() {
                 </Card>
               ) : (
                 <div className="space-y-4">
-                  {contactRequests.map((request) => (
+                  {contactRequests.map(request => (
                     <Card key={request.id}>
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between gap-4">
@@ -675,13 +734,22 @@ export default function Dashboard() {
                             <div className="flex items-center gap-2 mb-2">
                               <Badge
                                 variant={
-                                  request.status === 'accepted' ? 'default' :
-                                  request.status === 'rejected' ? 'destructive' : 'secondary'
+                                  request.status === 'accepted'
+                                    ? 'default'
+                                    : request.status === 'rejected'
+                                    ? 'destructive'
+                                    : 'secondary'
                                 }
                               >
-                                {request.status === 'pending' && <Clock className="w-3 h-3 mr-1" />}
-                                {request.status === 'accepted' && <CheckCircle className="w-3 h-3 mr-1" />}
-                                {request.status === 'rejected' && <XCircle className="w-3 h-3 mr-1" />}
+                                {request.status === 'pending' && (
+                                  <Clock className="w-3 h-3 mr-1" />
+                                )}
+                                {request.status === 'accepted' && (
+                                  <CheckCircle className="w-3 h-3 mr-1" />
+                                )}
+                                {request.status === 'rejected' && (
+                                  <XCircle className="w-3 h-3 mr-1" />
+                                )}
                                 {request.status}
                               </Badge>
                               <span className="text-sm text-muted-foreground">
@@ -690,25 +758,46 @@ export default function Dashboard() {
                             </div>
                             <p className="text-foreground">{request.message}</p>
                           </div>
-                          {request.status === 'pending' && (
-                            <div className="flex gap-2">
-                              <Button
-                                size="sm"
-                                onClick={() => handleUpdateRequestStatus(request.id, 'accepted')}
-                              >
-                                <CheckCircle className="w-4 h-4 mr-1" />
-                                Accept
-                              </Button>
-                              <Button
-                                size="sm"
+                          <div className="flex flex-col gap-2">
+                            {request.status === 'pending' && (
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  onClick={() =>
+                                    handleUpdateRequestStatus(
+                                      request.id,
+                                      'accepted',
+                                    )
+                                  }
+                                >
+                                  <CheckCircle className="w-4 h-4 mr-1" />
+                                  Accept
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() =>
+                                    handleUpdateRequestStatus(
+                                      request.id,
+                                      'rejected',
+                                    )
+                                  }
+                                >
+                                  <XCircle className="w-4 h-4 mr-1" />
+                                  Reject
+                                </Button>
+                              </div>
+                            )}
+                            {request.status === 'accepted' && (
+                              <Badge
                                 variant="outline"
-                                onClick={() => handleUpdateRequestStatus(request.id, 'rejected')}
+                                className="bg-green-50 text-green-700 border-green-200"
                               >
-                                <XCircle className="w-4 h-4 mr-1" />
-                                Reject
-                              </Button>
-                            </div>
-                          )}
+                                <CheckCircle className="w-3 h-3 mr-1" />
+                                Awaiting Client Message
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
@@ -722,3 +811,4 @@ export default function Dashboard() {
     </main>
   );
 }
+

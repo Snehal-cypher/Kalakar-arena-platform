@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class"],
@@ -73,6 +74,21 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        brand: {
+          brown: "#3B1F1F",
+          charcoal: "#2E2A28",
+          rosewood: "#7A4A4A",
+          muted: "#8C7A73",
+          terracotta: "#C28E7A",
+          sage: "#8FA8A0",
+          gold: "#B89B5E",
+          cream: "#FFF8F3",
+          beige: "#F2E6E1",
+          teal: "#67A893",
+          plum: "#963869",
+          "deep-brown": "#3d0404",
+          "deep-red": "#780D0D",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -96,14 +112,24 @@ export default {
           from: { opacity: "0", transform: "translateX(-10px)" },
           to: { opacity: "1", transform: "translateX(0)" },
         },
+        "scroll-left": {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-100%)" },
+        },
+        "scroll-right": {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(0)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.5s ease-out",
         "slide-in": "slide-in 0.3s ease-out",
+        "scroll-left": "scroll-left 60s linear infinite",
+        "scroll-right": "scroll-right 60s linear infinite",
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 } satisfies Config;

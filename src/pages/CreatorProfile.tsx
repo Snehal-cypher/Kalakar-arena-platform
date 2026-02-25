@@ -10,13 +10,13 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { 
-  MapPin, 
-  Phone, 
-  Instagram, 
-  Globe, 
-  Heart, 
-  MessageSquare, 
+import {
+  MapPin,
+  Phone,
+  Instagram,
+  Globe,
+  Heart,
+  MessageSquare,
   Loader2,
   ArrowLeft,
   Send,
@@ -57,12 +57,19 @@ export default function CreatorProfile() {
   }, [id, user]);
 
   const fetchCreatorData = async () => {
+    if (!id) return;
+
     try {
       const { data: profileData } = await supabase
         .from('profiles')
         .select('*')
         .eq('user_id', id)
         .maybeSingle();
+
+      if (!profileData) {
+        setLoading(false);
+        return;
+      }
 
       const { data: creatorData } = await supabase
         .from('creator_profiles')
@@ -193,7 +200,7 @@ export default function CreatorProfile() {
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
-      
+
       <div className="pt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Back Button */}
@@ -306,9 +313,9 @@ export default function CreatorProfile() {
                       </a>
                     )}
                     {instagram && (
-                      <a 
-                        href={`https://instagram.com/${instagram.replace('@', '')}`} 
-                        target="_blank" 
+                      <a
+                        href={`https://instagram.com/${instagram.replace('@', '')}`}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
                       >
@@ -317,9 +324,9 @@ export default function CreatorProfile() {
                       </a>
                     )}
                     {website && (
-                      <a 
+                      <a
                         href={website.startsWith('http') ? website : `https://${website}`}
-                        target="_blank" 
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
                       >
@@ -354,8 +361,8 @@ export default function CreatorProfile() {
             ) : (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {posts.map((post) => (
-                  <Card 
-                    key={post.id} 
+                  <Card
+                    key={post.id}
                     className="overflow-hidden cursor-pointer group"
                     onClick={() => setSelectedPost(post)}
                   >

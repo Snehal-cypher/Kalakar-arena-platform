@@ -48,18 +48,25 @@ export default function Explore() {
     }
   }, [user]);
 
+
+
   const fetchCreators = async () => {
     try {
-      // Fetch creator profiles with their profile info
+      // Fetch creator profiles
       const { data: creatorProfiles, error } = await supabase
         .from('creator_profiles')
         .select('user_id, bio, city, categories');
 
       if (error) throw error;
 
+      if (!creatorProfiles || creatorProfiles.length === 0) {
+        setCreators([]);
+        return;
+      }
+
       // Fetch profiles for these creators
-      const userIds = creatorProfiles?.map(c => c.user_id) || [];
-      
+      const userIds = creatorProfiles.map(c => c.user_id);
+
       const { data: profiles } = await supabase
         .from('profiles')
         .select('user_id, full_name, avatar_url')
@@ -73,16 +80,17 @@ export default function Explore() {
         .order('created_at', { ascending: false });
 
       // Combine data
-      const combinedData: Creator[] = creatorProfiles?.map(creator => ({
+      const combinedData: Creator[] = creatorProfiles.map(creator => ({
         ...creator,
         categories: creator.categories || [],
         profile: profiles?.find(p => p.user_id === creator.user_id) || null,
         posts: posts?.filter(p => p.user_id === creator.user_id).slice(0, 3) || []
-      })) || [];
+      }));
 
       setCreators(combinedData);
     } catch (error) {
       console.error('Error fetching creators:', error);
+      setCreators([]);
     } finally {
       setLoading(false);
     }
@@ -90,7 +98,7 @@ export default function Explore() {
 
   const fetchFollowing = async () => {
     if (!user) return;
-    
+
     const { data } = await supabase
       .from('follows')
       .select('following_id')
@@ -110,7 +118,7 @@ export default function Explore() {
         .delete()
         .eq('follower_id', user.id)
         .eq('following_id', creatorId);
-      
+
       setFollowing(prev => {
         const next = new Set(prev);
         next.delete(creatorId);
@@ -120,13 +128,13 @@ export default function Explore() {
       await supabase
         .from('follows')
         .insert({ follower_id: user.id, following_id: creatorId });
-      
+
       setFollowing(prev => new Set([...prev, creatorId]));
     }
   };
 
   const filteredCreators = creators.filter(creator => {
-    const matchesSearch = !searchQuery || 
+    const matchesSearch = !searchQuery ||
       creator.profile?.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       creator.bio?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       creator.city?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -140,7 +148,7 @@ export default function Explore() {
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
-      
+
       <div className="pt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}
@@ -205,9 +213,8 @@ export default function Explore() {
                         creator.posts.map((post, index) => (
                           <div
                             key={post.id}
-                            className={`relative overflow-hidden ${
-                              index === 0 && creator.posts.length === 1 ? 'col-span-3' : ''
-                            }`}
+                            className={`relative overflow-hidden ${index === 0 && creator.posts.length === 1 ? 'col-span-3' : ''
+                              }`}
                           >
                             <img
                               src={post.image_url}
@@ -261,7 +268,7 @@ export default function Explore() {
                               </Button>
                             )}
                           </div>
-                          
+
                           {creator.city && (
                             <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
                               <MapPin className="w-3 h-3" />
